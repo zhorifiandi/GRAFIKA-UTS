@@ -12,22 +12,12 @@ double getRatio(int x) {
 	return ret;
 }
 
-void drawTree(int x, int y, list<LineDetails*> listLine) {
-	cout<<x<<" "<<y<<endl;
-	//cout<<listLine.back()<<endl;
-	listLine.push_back(new LineDetails(getRatio(x), getRatio(y), getRatio(x), getRatio(y+3)));
-	listLine.push_back(new LineDetails(getRatio(x-3), getRatio(y), getRatio(x), getRatio(y-6)));
-	listLine.push_back(new LineDetails(getRatio(x), getRatio(y-6), getRatio(x+3), getRatio(y)));
-	listLine.push_back(new LineDetails(getRatio(x+3), getRatio(y), getRatio(x-3), getRatio(y)));
-	//cout<<listLine.back()<<endl;
-}
-
 int main() {
 	int varZoom = 3;
 	// Big screen
 	// !!! width:height ratio = 4:3
-	int bigScreenWidth = 415;
-	int bigScreenHeight = 415;	
+	int bigScreenWidth = 720;
+	int bigScreenHeight = 720;	
 	Screen bigScreen = Screen(0, 0, bigScreenWidth, bigScreenHeight);
 	
 	// Small screen
@@ -51,10 +41,12 @@ int main() {
 	list<LineDetails*> listTree;
 	list<LineDetails*> listPath;
 	list<LineDetails*> listFlower;
+	list<LineDetails*> listPlane;
 	bool lineDisplay = 1;
 	bool treeDisplay = 1;
 	bool pathDisplay = 1;
 	bool flowerDisplay = 1;
+	bool planeDisplay = 1;
 	
 	//read from file to built ITB depan
 	fstream myfile("coordinat.txt", std::ios_base::in);
@@ -155,6 +147,30 @@ int main() {
 	}
 
 	flowerfile.close();
+
+	//Draw Plane
+	fstream planefile("pesawat.txt", std::ios_base::in);
+
+	list<int> intListPesawat;
+	
+	int e;
+    while (planefile >> e)
+    {
+        intListPesawat.push_back(e);
+    }
+
+    
+	loop = 0;
+    for (std::list<int>::iterator it = intListPesawat.begin(); it != intListPesawat.end(); ++it) {
+		temp[loop] = *it;
+		loop++;
+		if (loop == 4) {
+			listPlane.push_back(new LineDetails(getRatio(temp[0]), getRatio(temp[1]), getRatio(temp[2]), getRatio(temp[3])));
+			loop = 0;
+		}
+	}
+
+	planefile.close();
 	
 	//Next Step
 	system("clear"); 
@@ -189,6 +205,13 @@ int main() {
 			}
 			smallScreen.renderSmall(listFlower, zoomScreen, bigScreen,255,0,0);
 		}
+		if (planeDisplay) {
+			for(list<LineDetails*>::iterator it = listPlane.begin(); it != listPlane.end(); it++) {
+				bigScreen.renderLine((*it),255,0,0);
+			}
+			smallScreen.renderSmall(listPlane, zoomScreen, bigScreen,255,0,0);
+		}
+
 		bigScreen.renderBorder();
 		smallScreen.renderBorder();
 		zoomScreen.renderBorder();
