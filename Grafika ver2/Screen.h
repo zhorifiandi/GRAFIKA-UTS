@@ -29,6 +29,9 @@ class Screen {
 			this->lineManager = Line();
 		}
 		//Function for change the origin
+		
+		int getOriginX(){return this->originX;}
+		int getOriginY(){return this->originY;}
 		void changeOrigin(int originX, int originY) {
 			this->originX = originX;
 			this->originY = originY;
@@ -104,7 +107,13 @@ class Screen {
 			// draw line
 			lineManager.insertLine(newx1, newy1, newx2, newy2, red, green, blue);
 		}
-		
+		void moveLine(LineDetails *l, double dx, double dy){
+			l->x1 += dx;
+			l->x2 += dx;
+			l->y1 += dy;
+			l->y2 += dy;
+		}
+			
 		void renderLine(LineDetails *l, int red, int green, int blue) {
 			// check if line is outside the screen (only accept value between 0 and 1)
 			if(l->x1 < 0 || l->x1 > 1 || l->x2 < 0 || l->x2 > 1 
