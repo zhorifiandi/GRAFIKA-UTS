@@ -192,18 +192,19 @@ void buttonPress(){
 			  smallScreen.renderSmall(listPlane, zoomScreen, bigScreen,255,0,0);	
 		break;
 		case 'b':
-			list<LineDetails*>::iterator it = listPlane.begin();
+			// list<LineDetails*>::iterator it = listPlane.begin();
 
 			
-
-			int x = (*it)->x1*417;
-			int y = (*it)->y1*417;
-			int oriX = zoomScreen.getOriginX();
-			int oriY = zoomScreen.getOriginY();
-			if ((x>oriX && x<(oriX+zoomScreenWidth)) && (y>oriY && y<(oriY+zoomScreenHeight))) shoot = true;
-			else{
-				thread shootNH(shootNoHit);
-				shootNH.detach();
+			for (auto it = listPlane.begin(); it != listPlane.end(); it++){
+				int x = (*it)->x1*417;
+				int y = (*it)->y1*417;
+				int oriX = zoomScreen.getOriginX();
+				int oriY = zoomScreen.getOriginY();
+				if ((x>oriX && x<(oriX+zoomScreenWidth)) && (y>oriY && y<(oriY+zoomScreenHeight))) shoot = true;
+				else{
+					thread shootNH(shootNoHit);
+					shootNH.detach();
+				}
 			}		
 		break;
 		}
