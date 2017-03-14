@@ -429,6 +429,7 @@ void win(){
 }
 
 int main() {
+/*
 	//List of LineDetails
 	int plus=0;
 	list<int> intList;
@@ -484,15 +485,14 @@ int main() {
 	if (shoot){
 	//shootEffect();
 	}
-
+	*/
 	//Credit?
-	/*
 	fb2 = new FrameBuffer2;
 	
 	game_over();
 	//win();
 	delete fb2;
-	*/
+	
 		
 	return 0;
 }
