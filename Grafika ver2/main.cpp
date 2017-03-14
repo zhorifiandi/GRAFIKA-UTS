@@ -15,11 +15,14 @@ using namespace std;
 const int RATIO_VALUE= 417;
 
 list<LineDetails*> listPlane;
+list<LineDetails*> listExplosion;
 char ch;
 // !!! width:height ratio = 4:3
 int bigScreenWidth = 540;
 int bigScreenHeight = 540;	
 Screen bigScreen = Screen(0, 0, bigScreenWidth, bigScreenHeight);
+
+Screen bigScreen2 = Screen(0, 0, bigScreenWidth, bigScreenHeight);
 	
 // Small screen
 // !!! its size is relative to bigScreen
@@ -197,13 +200,14 @@ void buttonPress(){
 		case 'b':
 			usleep(100);
 
-			for (auto it = listPlane.begin(); it != listPlane.end(); it++){
+			for (list<LineDetails*>::iterator it = listPlane.begin(); it != listPlane.end(); it++){
 				int x = (*it)->x1*417;
 				int y = (*it)->y1*417;
 				int oriX = zoomScreen.getOriginX();
 				int oriY = zoomScreen.getOriginY();
-				if ((x>oriX && x<(oriX+zoomScreenWidth)) && (y>oriY && y<(oriY+zoomScreenHeight))) shoot = true;
-				else{
+				if ((x>oriX && x<(oriX+zoomScreenWidth)) && (y>oriY && y<(oriY+zoomScreenHeight))) {
+					shoot = true;
+				} else {
 					thread shootNH(shootNoHit);
 					shootNH.detach();
 				}
@@ -427,6 +431,49 @@ void win(){
 	}
 }
 
+void shootEffect() {
+	
+	// Load explosion coordinates
+	int idx;
+	int elmt;
+	int* table = new int[4];
+   
+	fstream explosion("explosion1.txt", std::ios_base::in);
+	list<int> intListExplosion;
+	
+    while (explosion >> elmt)
+    {
+        intListExplosion.push_back(elmt);
+    }
+    
+	idx = 0;
+    for (std::list<int>::iterator it = intListExplosion.begin(); it != intListExplosion.end(); ++it) {
+		table[idx] = *it;
+		idx++;
+		if (idx == 4) {
+			listExplosion.push_back(new LineDetails(getRatio(table[0]), getRatio(table[1]), getRatio(table[2]), getRatio(table[3])));
+			idx = 0;
+		}
+	}
+
+	explosion.close();
+
+	// Draw explosion
+	system("clear");
+	int initx, inity;
+	initx = (*listPlane.begin())->x1*417;
+	inity = (*listPlane.begin())->y1*417;
+	for(list<LineDetails*>::iterator it = listExplosion.begin(); it != listExplosion.end(); it++) {
+		(*it)->moveLine(getRatio(initx),getRatio(inity));
+		bigScreen2.renderLine((*it),255,0,0);
+	}
+	zoomScreen.renderBorder();
+	smallScreen.renderSmall(listExplosion, zoomScreen, bigScreen2, 255,0,0);
+	bigScreen2.renderBorder();
+	smallScreen.renderBorder();
+	usleep(10000);
+}
+
 int main() {
 	//List of LineDetails
 	int plus=0;
@@ -481,7 +528,7 @@ int main() {
 	
 	//Abis ditembak-> animasi ledakan sama dilatasi
 	if (shoot){
-	//shootEffect();
+		shootEffect();
 	}
 
 	//Credit?
