@@ -18,7 +18,12 @@ class LineDetails {
 		LineDetails(){
 		}
 		
-		
+		void moveLine(double deltaX, double deltaY){
+			this->x1 = deltaX + this->x1;
+			this->y1 = deltaY + this->y1;
+			this->x2 = deltaX + this->x2;
+			this->y2 = deltaY + this->y2;
+		}
 };
 
 #endif
