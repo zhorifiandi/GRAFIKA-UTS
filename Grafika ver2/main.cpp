@@ -195,9 +195,8 @@ void buttonPress(){
 			  smallScreen.renderSmall(listPlane, zoomScreen, bigScreen,255,0,0);	
 		break;
 		case 'b':
-			//list<LineDetails*>::iterator it = listPlane.begin();
-
 			usleep(100);
+
 			for (auto it = listPlane.begin(); it != listPlane.end(); it++){
 				int x = (*it)->x1*417;
 				int y = (*it)->y1*417;
