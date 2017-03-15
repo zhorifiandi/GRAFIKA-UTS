@@ -17,6 +17,7 @@ const int RATIO_VALUE= 417;
 
 list<LineDetails*> listPlane;
 list<LineDetails*> listPlaneFill;
+list<LineDetails*> listTree;
 char ch;
 int speed=1;
 // !!! width:height ratio = 4:3
@@ -86,6 +87,7 @@ int deltaY(double y1){
 	}
 }
 
+
 void flyPlane(){
 	int deltX, deltY;	
 	while (!shoot){
@@ -99,8 +101,15 @@ void flyPlane(){
 			(*it)->moveLine(getRatio(deltX),getRatio(deltY));
 			bigScreen.renderLine((*it),255,0,0);
 		}
+		for(list<LineDetails*>::iterator it = listTree.begin(); it != listTree.end(); it++) {
+				bigScreen.renderLine((*it),255,100,30);
+			}
+			smallScreen.renderSmall(listTree, zoomScreen, bigScreen,255,100,30);
+			
+
 		zoomScreen.renderBorder();
 		smallScreen.renderSmall(listPlane, zoomScreen, bigScreen,255,0,0);
+		smallScreen.renderSmall(listTree, zoomScreen, bigScreen,255,100,30);
 		bigScreen.renderBorder();
 		smallScreen.renderBorder();
 		usleep(speed);
@@ -737,6 +746,31 @@ int main() {
 	}
 
 	planefile.close();
+
+	//Draw FLower
+	fstream treefile("coordinat-flower.txt", std::ios_base::in);
+
+	int* tempT = new int[2];	
+    list<int> intTreeList;
+    int b;
+    while (treefile >> b)
+    {
+        intTreeList.push_back(b);
+    }
+
+    
+	loop = 0;
+    for (std::list<int>::iterator it = intTreeList.begin(); it != intTreeList.end(); ++it) {
+		tempT[loop] = *it;
+		loop++;
+		if (loop == 2) {
+			listTree.push_back(new LineDetails(getRatio(tempT[0]), getRatio(tempT[1]), getRatio(tempT[0]+5), getRatio(tempT[1]+5)));
+			listTree.push_back(new LineDetails(getRatio(tempT[0]), getRatio(tempT[1]+5), getRatio(tempT[0]+5), getRatio(tempT[1])));
+			loop = 0;
+		}
+	}
+
+	treefile.close();
 	
 	Menu menu;
 	menu.writeMenu();
@@ -788,9 +822,8 @@ int main() {
 	
 	thread fly(flyPlane);
 	thread button(buttonPress);
-	
+	bool flowerDisplay = true;
 	while(!shoot) {
-		
 	}
 	fly.detach();
 	button.detach();
