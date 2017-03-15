@@ -16,6 +16,7 @@ using namespace std;
 const int RATIO_VALUE= 417;
 
 list<LineDetails*> listPlane;
+list<LineDetails*> listPlaneFill;
 char ch;
 int speed=1;
 // !!! width:height ratio = 4:3
@@ -97,7 +98,7 @@ void flyPlane(){
 			
 			(*it)->moveLine(getRatio(deltX),getRatio(deltY));
 			bigScreen.renderLine((*it),255,0,0);
-		}	
+		}
 		zoomScreen.renderBorder();
 		smallScreen.renderSmall(listPlane, zoomScreen, bigScreen,255,0,0);
 		bigScreen.renderBorder();
@@ -536,46 +537,6 @@ void insertLine_Matrix(int x1, int y1,int x2, int y2, int priority)
 			  }
 			}	
 			
-			/*// first and last pixel
-			//insertPriority(x1,y1,priority);
-			//insertPriority(x2,y2,priority);
-		
-		    // Bresenham's line algorithm
-			const bool steep = (fabs(y2 - y1) > fabs(x2 - x1));
-			if(steep){
-			  std::swap(x1, y1);
-			  std::swap(x2, y2);
-			}
-
-			if(x1 > x2) {
-			  std::swap(x1, x2);
-			  std::swap(y1, y2);
-			}
-
-			const float dx = x2 - x1;
-			const float dy = fabs(y2 - y1);
-
-			float error = dx / 2.0f;
-			const int ystep = (y1 < y2) ? 1 : -1;
-			int y = (int)y1;
-
-			const int maxX = (int)x2;
-			
-			for(int x=(int)x1; x<maxX; x++) {
-			  if(steep) {
-				 insertPriority(y,x,priority);
-			  }
-			  else {
-				 insertPriority(x,y,priority);
-			     
-			  }
-
-			  error -= dy;
-			  if(error < 0) {
-			      y += ystep;
-			      error += dx;
-			  }
-			}*/
 
 		}
 
@@ -608,67 +569,87 @@ bool isExistRow(int row,int col,int p){
 		return false;
 	}
 
-void showOverlap(){
-	int deltax =-150, deltay=0;
-	int red[] = {0,55,150,150,111,0};
-	int green[]= {0,200,0,200,111,0};
-	Framebuffer fb1;
+void drawG(int deltax, int deltay, int priority) {
+	//G
+	//insertLine_Matrix(deltax+232 , deltay+129 , deltax+258 , deltay+129 , 1  );
+	insertLine_Matrix(deltax+258 , deltay+130 , deltax+258 , deltay+138 ,priority  );
+	//insertLine_Matrix(deltax+242 , deltay+138 , deltax+258 , deltay+138 ,1  );
+	insertLine_Matrix(deltax+242 , deltay+138 , deltax+242 , deltay+165 , priority  );
+	//insertLine_Matrix(deltax+246 , deltay+150 , deltax+258 , deltay+150 , 1 );
+	insertLine_Matrix(deltax+259 , deltay+150 , deltax+259 , deltay+174 , priority  );
+	//insertLine_Matrix(deltax+250 , deltay+159 , deltax+246 , deltay+159 ,1 );
+	insertLine_Matrix(deltax+246 , deltay+159 , deltax+246 , deltay+150 , priority  );
+	//insertLine_Matrix(deltax+242 , deltay+165 , deltax+250 , deltay+165 , 1  );
+	insertLine_Matrix(deltax+250 , deltay+165 , deltax+250 , deltay+159 ,priority );
+	//insertLine_Matrix(deltax+259 , deltay+174 , deltax+232 , deltay+174 , 1 );
+	insertLine_Matrix(deltax+232 , deltay+174 , deltax+232 , deltay+130 , priority );
+}
 
+void drawO(int deltax, int deltay, int priority){
+		//O
+		//insertLine_Matrix(deltax+378 , deltay+129 , deltax+406 , deltay+129 ,1 );
+		insertLine_Matrix(deltax+406 , deltay+129 , deltax+406 , deltay+174 , priority  );
+		//insertLine_Matrix(deltax+406 , deltay+174 , deltax+378 , deltay+174 , 150 , 0 , 0  );
+		insertLine_Matrix(deltax+378 , deltay+174 , deltax+378 , deltay+129 , priority  );
+
+		//insertLine_Matrix(deltax+388 , deltay+138 , deltax+396 , deltay+138 , 150 , 0 , 0  );
+		insertLine_Matrix(deltax+396 , deltay+138 , deltax+396 , deltay+165 , priority  );
+		//insertLine_Matrix(deltax+396 , deltay+165 , deltax+388 , deltay+165 , 150 , 0 , 0  );
+		insertLine_Matrix(deltax+388 , deltay+165 , deltax+388 , deltay+138 , priority );
+}
+
+void drawKotak(int deltax, int deltay, int priority){
+	insertLine_Matrix(deltax+200+50 , deltay+100 , deltax+200+50 , deltay+200 ,priority);
+	//insertLine_Matrix(deltax+200+50 , deltay+200 , deltax+410-50 , deltay+200 ,2);
+//	insertLine_Matrix(deltax+200+50 , deltay+100 , deltax+410-51 , deltay+100 ,2);
+	insertLine_Matrix(deltax+410-50 , deltay+100 , deltax+410-50 , deltay+200 ,priority);
+}
+
+void drawPlane(int deltax, int deltay){
+	for (auto it = listPlaneFill.begin(); it != listPlaneFill.end(); it++){
+		int x1 = (*it)->x1;
+		int y1 = (*it)->y1;
+		int x2 = (*it)->x2;
+		int y2 = (*it)->y2;
+		insertLine_Matrix(deltax+x1,deltay+y1,deltax+x2,deltay+y2, 3);
+	}
+}
+
+void flyPlaneFill(){
+	int deltX, deltY;	
+	while (!shoot){
+		system("clear");
+		for(list<LineDetails*>::iterator it = listPlane.begin(); it != listPlane.end(); it++) {
+			if (it==listPlane.begin()){
+				deltX = deltaX((*it)->x1);
+				deltY = deltaY((*it)->y1);
+			}
+			
+			(*it)->moveLine(getRatio(deltX),getRatio(deltY));
+			bigScreen.renderLine((*it),255,0,0);
+		}	
+		zoomScreen.renderBorder();
+		smallScreen.renderSmall(listPlane, zoomScreen, bigScreen,255,0,0);
+		bigScreen.renderBorder();
+		smallScreen.renderBorder();
+		usleep(speed);
+	}
+}
+
+void initializeMatrix(){
 	for (int i=0;i<400;i++){
 		for (int j=0;j<400;j++){
 			for (int k=0;k<4;k++) polygonMatrix[i][j][k]=9;	
 		}	
 	}
-	
-	
-		deltax =-150; deltay=50;
-		//G
-		//insertLine_Matrix(deltax+232 , deltay+129 , deltax+258 , deltay+129 , 1  );
-		insertLine_Matrix(deltax+258 , deltay+130 , deltax+258 , deltay+138 ,1  );
-		//insertLine_Matrix(deltax+242 , deltay+138 , deltax+258 , deltay+138 ,1  );
-		insertLine_Matrix(deltax+242 , deltay+138 , deltax+242 , deltay+165 , 1  );
-		//insertLine_Matrix(deltax+246 , deltay+150 , deltax+258 , deltay+150 , 1 );
-		insertLine_Matrix(deltax+259 , deltay+150 , deltax+259 , deltay+174 , 1  );
-		//insertLine_Matrix(deltax+250 , deltay+159 , deltax+246 , deltay+159 ,1 );
-		insertLine_Matrix(deltax+246 , deltay+159 , deltax+246 , deltay+150 , 1  );
-		//insertLine_Matrix(deltax+242 , deltay+165 , deltax+250 , deltay+165 , 1  );
-		insertLine_Matrix(deltax+250 , deltay+165 , deltax+250 , deltay+159 ,1 );
-		//insertLine_Matrix(deltax+259 , deltay+174 , deltax+232 , deltay+174 , 1 );
-		insertLine_Matrix(deltax+232 , deltay+174 , deltax+232 , deltay+130 , 1 );
-	
-	
-	deltax =-250;
-		//O
-		//insertLine_Matrix(deltax+378 , deltay+129 , deltax+406 , deltay+129 ,1 );
-		insertLine_Matrix(deltax+406 , deltay+129 , deltax+406 , deltay+174 , 2  );
-		//insertLine_Matrix(deltax+406 , deltay+174 , deltax+378 , deltay+174 , 150 , 0 , 0  );
-		insertLine_Matrix(deltax+378 , deltay+174 , deltax+378 , deltay+129 , 2  );
+}
 
-		//insertLine_Matrix(deltax+388 , deltay+138 , deltax+396 , deltay+138 , 150 , 0 , 0  );
-		insertLine_Matrix(deltax+396 , deltay+138 , deltax+396 , deltay+165 , 2  );
-		//insertLine_Matrix(deltax+396 , deltay+165 , deltax+388 , deltay+165 , 150 , 0 , 0  );
-		insertLine_Matrix(deltax+388 , deltay+165 , deltax+388 , deltay+138 , 2 );
-		
-	//KOTAK2	
-	deltax =-70; deltay=30;
-	insertLine_Matrix(deltax+200+50 , deltay+100 , deltax+200+50 , deltay+200 ,3);
-	//insertLine_Matrix(deltax+200+50 , deltay+200 , deltax+410-50 , deltay+200 ,2);
-//	insertLine_Matrix(deltax+200+50 , deltay+100 , deltax+410-51 , deltay+100 ,2);
-	insertLine_Matrix(deltax+410-50 , deltay+100 , deltax+410-50 , deltay+200 ,3);
-	
-	//KOTAK
-	deltax =-150, deltay=0;
-	insertLine_Matrix(deltax+200+50 , deltay+100 , deltax+200+50 , deltay+200 ,4);
-	//insertLine_Matrix(deltax+200+50 , deltay+200 , deltax+410-50 , deltay+200 ,3);
-	//insertLine_Matrix(deltax+200+50 , deltay+100 , deltax+410-51 , deltay+100 ,3);
-	insertLine_Matrix(deltax+410-50 , deltay+100 , deltax+410-50 , deltay+200 ,4);
-
-	
-	
-	
-	
-	
-	
+void showOverlap(){
+	int deltax =-150, deltay=0;
+	int red[] = {70,55,150,150,111,99};
+	int green[]= {0,200,0,200,111,0};
+	Framebuffer fb1;
+	cout << " tes" << endl;
 	//*/
 	colorMode.push_front(0);
 
@@ -719,6 +700,7 @@ void showOverlap(){
 		while (!colorMode.empty()) colorMode.pop_front();
 		colorMode.push_front(0);
 }
+cout << " tesfaf" << endl;
 
 }
 
@@ -738,18 +720,7 @@ int main() {
 	//Draw Plane
 	fstream planefile("pesawat.txt", std::ios_base::in);
 	list<int> intListPesawat;
-	
-	Menu menu;
-	menu.writeMenu();
-	speed = menu.getLevel();
-	system("clear");
-	
-	//OVERLAP
-	showOverlap();
-	sleep(5);//Kalau bisa diganti sama tombol. jadi permainan dimulai kalau tombol diteken(buat nambah nilai interaksi, soalnya
-			//nilainya lumayan rendah
-	system("clear");
-    while (planefile >> e)
+	while (planefile >> e)
     {
         intListPesawat.push_back(e);
     }
@@ -760,11 +731,42 @@ int main() {
 		loop++;
 		if (loop == 4) {
 			listPlane.push_back(new LineDetails(getRatio(temp[0]), getRatio(temp[1]), getRatio(temp[2]), getRatio(temp[3])));
+			listPlaneFill.push_back(new LineDetails(temp[0],temp[1],temp[2],temp[3]));
 			loop = 0;
 		}
 	}
 
 	planefile.close();
+	
+	Menu menu;
+	menu.writeMenu();
+	speed = menu.getLevel();
+	system("clear");
+	
+	//OVERLAP
+	initializeMatrix();
+	int deltax =-150, deltay=50;
+	drawG(deltax,deltay,1);
+	deltax =-250; deltay=50;
+	drawO(deltax,deltay,2);
+		
+	//KOTAK2	
+	deltax =-70; deltay=30;
+	drawKotak(deltax,deltay,3);
+	
+	//KOTAK
+	deltax =-150, deltay=0;
+	drawKotak(deltax,deltay,4);
+	drawPlane(0,0);
+	showOverlap();
+	cout << endl << endl << "\t\t\t" << "Insert any key and press enter to continue............" << endl;
+	int dummy;
+	cin >> dummy;
+	//sleep(5);//Kalau bisa diganti sama tombol. jadi permainan dimulai kalau tombol diteken(buat nambah nilai interaksi, soalnya
+			//nilainya lumayan rendah
+
+	system("clear");
+    
 	
 	fb2 = new FrameBuffer2();
 	
