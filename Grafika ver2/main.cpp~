@@ -218,7 +218,7 @@ void win(){
 	int deltay = -100;
 	int deltax = -100;
 	
-	cout<<"Thanks for Playing!!"<<endl;
+	cout<<"\tThanks for Playing!!"<<endl;
 	while (deltay < 300){
 		//W
 		fb2->draw_line3(deltax+278 , deltay+110 , deltax+288 , deltay+110 , 0 , 150 , 0  );
@@ -632,7 +632,7 @@ int main() {
 	
 	if (shoot){
 	//shootEffect();
-		//system("clear");
+		system("clear");
 		win();
 	}
 	else{
