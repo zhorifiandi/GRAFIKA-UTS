@@ -21,7 +21,7 @@ typedef struct {
 
 std::priority_queue<int> polygonMatrix[MATSIZE][MATSIZE];
 std::vector<color> color_container;
-
+std::priority_queue<int> priority_container;
 
 
 void insertPriority(int j,int i, int p){
@@ -82,24 +82,38 @@ void showOverlap(){
 	for (int i=0;i<MATSIZE;i++){//y
 		for (int j=0;j<MATSIZE;j++){//x
 			if (polygonMatrix[i][j].empty()){
-				if (current_priority == -1){
+				if (priority_container.empty()){
 					//kosong
 				}
 				else {
-					auto elmt = color_container.at(current_priority-1);
+					auto elmt = color_container.at(priority_container.top()-1);
 					fb.putPixel(x,y,elmt.r,elmt.g,elmt.b);
 				}
 			}
 			else {
 				//Border Pertama ketemu
-				if (current_priority == -1){
-					current_priority = polygonMatrix[i][j].top();
-					auto elmt = color_container.at(current_priority-1);
+				if (priority_container.empty()){
+					for (auto iter = polygonMatrix[i][j].begin(); iter != polygonMatrix[i][j].end(); iter++){ 
+						priority_container.push(*iter);
+					}
+					auto elmt = color_container.at(priority_container.top()-1);
 					fb.putPixel(x,y,elmt.r,elmt.g,elmt.b);
 				}
 				//Border terluar same object, ga bentrok
-				else (current_priority == polygonMatrix[i][j].top()){
-					auto elmt = color_container.at(current_priority-1);
+				else (priority_container.top() == polygonMatrix[i][j].top()){
+					auto elmt = color_container.at(priority_container.top()-1);
+					fb.putPixel(x,y,elmt.r,elmt.g,elmt.b);
+				}
+				//Border pertama objek lain 
+				else (priority_container.top() >= polygonMatrix[i][j].top()){
+					priority_container.pop();
+					auto elmt = color_container.at(priority_container.top()-1);
+					fb.putPixel(x,y,elmt.r,elmt.g,elmt.b);
+				}
+				//Border pertama objek lain 
+				else (priority_container.top() < polygonMatrix[i][j].top()){
+					priority_container.push(polygonMatrix[i][j].top());
+					auto elmt = color_container.at(priority_container.top()-1);
 					fb.putPixel(x,y,elmt.r,elmt.g,elmt.b);
 				}
 
