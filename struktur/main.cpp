@@ -87,34 +87,37 @@ void showOverlap(){
 				}
 				else {
 					auto elmt = color_container.at(priority_container.top()-1);
-					fb.putPixel(x,y,elmt.r,elmt.g,elmt.b);
+					fb.putPixel(j,i,elmt.r,elmt.g,elmt.b);
 				}
 			}
 			else {
 				//Border Pertama ketemu
 				if (priority_container.empty()){
-					for (auto iter = polygonMatrix[i][j].begin(); iter != polygonMatrix[i][j].end(); iter++){ 
-						priority_container.push(*iter);
+					priority_queue<int> dummy = polygonMatrix[i][j];
+					while (!dummy.empty()){
+						int iter = dummy.top();
+						dummy.pop(); 
+						priority_container.push(iter);
 					}
 					auto elmt = color_container.at(priority_container.top()-1);
-					fb.putPixel(x,y,elmt.r,elmt.g,elmt.b);
+					fb.putPixel(j,i,elmt.r,elmt.g,elmt.b);
 				}
 				//Border terluar same object, ga bentrok
-				else (priority_container.top() == polygonMatrix[i][j].top()){
+				else if (priority_container.top() == polygonMatrix[i][j].top()){
 					auto elmt = color_container.at(priority_container.top()-1);
-					fb.putPixel(x,y,elmt.r,elmt.g,elmt.b);
+					fb.putPixel(j,i,elmt.r,elmt.g,elmt.b);
 				}
 				//Border pertama objek lain 
-				else (priority_container.top() >= polygonMatrix[i][j].top()){
+				else if (priority_container.top() >= polygonMatrix[i][j].top()){
 					priority_container.pop();
 					auto elmt = color_container.at(priority_container.top()-1);
-					fb.putPixel(x,y,elmt.r,elmt.g,elmt.b);
+					fb.putPixel(j,i,elmt.r,elmt.g,elmt.b);
 				}
 				//Border pertama objek lain 
-				else (priority_container.top() < polygonMatrix[i][j].top()){
+				else if (priority_container.top() < polygonMatrix[i][j].top()){
 					priority_container.push(polygonMatrix[i][j].top());
 					auto elmt = color_container.at(priority_container.top()-1);
-					fb.putPixel(x,y,elmt.r,elmt.g,elmt.b);
+					fb.putPixel(j,i,elmt.r,elmt.g,elmt.b);
 				}
 
 			}
