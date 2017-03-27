@@ -4,12 +4,13 @@
 #include <iostream>
 #include <queue>
 #include <vector>
+#include <algorithm>
 #include <stdlib.h>     /* srand, rand */
 #include <time.h>       /* time */
 #include <ctime>
 #include <cstdlib>
 #include "Framebuffer.h"
-#define MATSIZE 400
+#define MATSIZE 1000
 
 using namespace std;
 
@@ -21,7 +22,7 @@ typedef struct {
 
 std::priority_queue<int> polygonMatrix[MATSIZE][MATSIZE];
 std::vector<color> color_container;
-std::priority_queue<int> priority_container;
+std::vector<int> priority_container;
 
 
 void insertPriority(int j,int i, int p){
@@ -86,39 +87,89 @@ void showOverlap(){
 					//kosong
 				}
 				else {
-					auto elmt = color_container.at(priority_container.top()-1);
+					auto elmt = color_container.at(priority_container.front()-1);
 					fb.putPixel(j,i,elmt.r,elmt.g,elmt.b);
 				}
 			}
 			else {
 				//Border Pertama ketemu
+				cout << "notempty ";
 				if (priority_container.empty()){
+					cout << "empty" << endl;
 					priority_queue<int> dummy = polygonMatrix[i][j];
 					while (!dummy.empty()){
 						int iter = dummy.top();
 						dummy.pop(); 
-						priority_container.push(iter);
+						cout << "push " << polygonMatrix[i][j].top() << endl;
+						priority_container.push_back(iter);
+						sort(priority_container.begin(),priority_container.end());
+						reverse(priority_container.begin(),priority_container.end());
 					}
-					auto elmt = color_container.at(priority_container.top()-1);
+					auto elmt = color_container.at(priority_container.front()-1);
 					fb.putPixel(j,i,elmt.r,elmt.g,elmt.b);
 				}
 				//Border terluar same object, ga bentrok
-				else if (priority_container.top() == polygonMatrix[i][j].top()){
-					auto elmt = color_container.at(priority_container.top()-1);
+				else if (priority_container.front() == polygonMatrix[i][j].top()){
+					cout << "n1" << endl;
+					int t; cin >> t;
+					auto elmt = color_container.at(priority_container.front()-1);
+					fb.putPixel(j,i,elmt.r,elmt.g,elmt.b);
+					priority_queue<int> dummy = polygonMatrix[i][j];
+					while (!dummy.empty()){
+						auto idx = find(priority_container.begin(),priority_container.end(),dummy.top());
+						if (idx != priority_container.end()){
+							cout << "erase" << endl;
+							priority_container.erase(idx);
+						}
+						dummy.pop();
+					}
+					
+				}
+				//Border pertama objek lain 
+				else if (priority_container.front() > polygonMatrix[i][j].top()){
+					cout << "n2 " << priority_container.front() << " " << polygonMatrix[i][j].top()<< endl;
+					int t; cin >> t;
+					priority_queue<int> dummy = polygonMatrix[i][j];
+					while (!dummy.empty()){
+						auto idx = find(priority_container.begin(),priority_container.end(),dummy.top());
+						if (idx != priority_container.end()){
+							cout << "erase" << endl;
+							priority_container.erase(idx);
+						}
+						dummy.pop();
+					};
+					cout << "push " << polygonMatrix[i][j].top() << endl;
+					priority_container.push_back(polygonMatrix[i][j].top());
+					sort(priority_container.begin(),priority_container.end());
+					reverse(priority_container.begin(),priority_container.end());
+					auto elmt = color_container.at(priority_container.front()-1);
 					fb.putPixel(j,i,elmt.r,elmt.g,elmt.b);
 				}
 				//Border pertama objek lain 
-				else if (priority_container.top() >= polygonMatrix[i][j].top()){
-					priority_container.pop();
-					auto elmt = color_container.at(priority_container.top()-1);
+				else if (priority_container.front() < polygonMatrix[i][j].top()){
+					cout << "n3 " << priority_container.front() << " " << polygonMatrix[i][j].top()<< endl;
+					int t; cin >> t;
+					// cout << "push " << polygonMatrix[i][j].top() << endl;
+					// priority_container.push_back(polygonMatrix[i][j].top());
+					// sort(priority_container.begin(),priority_container.end());
+					// reverse(priority_container.begin(),priority_container.end());
+					auto elmt = color_container.at(priority_container.front()-1);
 					fb.putPixel(j,i,elmt.r,elmt.g,elmt.b);
 				}
-				//Border pertama objek lain 
-				else if (priority_container.top() < polygonMatrix[i][j].top()){
-					priority_container.push(polygonMatrix[i][j].top());
-					auto elmt = color_container.at(priority_container.top()-1);
-					fb.putPixel(j,i,elmt.r,elmt.g,elmt.b);
-				}
+
+				//Hapus dari priority container apabila sudah menemui ujung kanannya
+				// int k = 0;
+				// for (auto iter= priority_container.begin(); iter != priority_container.end(); iter++){
+				// 	priority_queue<int> dummy = polygonMatrix[i][j];
+				// 	while (!dummy.empty()){
+				// 		int dum = dummy.top();
+				// 		dummy.pop(); 
+				// 		if (dum == *iter){
+				// 			priority_container.erase(priority_container.begin()+k);
+				// 		}
+				// 	}
+				// 	k++;
+				// }
 
 			}
 		}
@@ -144,15 +195,39 @@ int main(){
 	// l.insertLine(100, 100, 150, 50, r,g,b);
 	cout << "smtg" << endl;
 	color c;
-	c.r = 45;
-	c.g = 255;
-	c.b = 64;
-	drawKotak(-70,30,c,1);
-
+	
+	// KASUS INI ENGGAK
 	c.r = 5;
 	c.g = 32;
 	c.b = 164;
-	drawKotak(0,30,c,2);
+	drawKotak(0,40,c,1);
+
+	c.r = 45;
+	c.g = 255;
+	c.b = 64;
+	drawKotak(-70,30,c,2);
+
+
+	// KASUS INI BUG
+	// c.r = 45;
+	// c.g = 255;
+	// c.b = 64;
+	// drawKotak(-70,30,c,1);
+
+	// c.r = 5;
+	// c.g = 32;
+	// c.b = 164;
+	// drawKotak(0,40,c,2);
+
+
+//Abaikan ini
+	// c.r = 58;
+	// c.g = 132;
+	// c.b = 94;
+	// drawKotak(60,80,c,2);
+
+
+	
 	showOverlap(); 
 	return 0;
 }
