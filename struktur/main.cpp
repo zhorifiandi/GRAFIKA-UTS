@@ -123,7 +123,6 @@ void showOverlap(){
 					// cout << "n1" << endl;
 					int temp; cin >> temp;
 					temp = priority_container.front();
-					cout << temp << endl;
 					for (auto it = polygonMatrix[i][j].begin(); it != polygonMatrix[i][j].end(); it++){
 						if (*it != temp){
 							priority_container.push_back(*it);
