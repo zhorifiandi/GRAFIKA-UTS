@@ -287,10 +287,10 @@ int main(){
 
 
 //Abaikan ini
-	// c.r = 58;
-	// c.g = 132;
-	// c.b = 94;
-	// drawKotak(60,80,c,2);
+	c.r = 58;
+	c.g = 132;
+	c.b = 94;
+	drawKotak(10,80,c,3);
 
 
 	
